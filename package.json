@@ -1,7 +1,9 @@
 {
   "name": "react-example",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Sistema de Cálculo NJG Solutions",
+  "author": "NJG Solutions",
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
@@ -17,6 +19,11 @@
     "productName": "CÁLCULO NJG",
     "win": {
       "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
     },
     "directories": {
       "output": "dist-electron"

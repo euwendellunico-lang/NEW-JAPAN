@@ -93,6 +93,10 @@ export default function App() {
         message = "A senha deve ter pelo menos 6 caracteres.";
       } else if (error.code === 'auth/invalid-email') {
         message = "Formato de e-mail inválido.";
+      } else if (error.code === 'auth/operation-not-allowed') {
+        message = "O login por e-mail/senha não está ativado no Firebase Console.";
+      } else {
+        message = `Erro: ${error.code || error.message || 'Falha na autenticação'}`;
       }
       setAuthError(message);
     } finally {
