@@ -74,112 +74,84 @@ function gerarPecasGrade(
   return pecas;
 }
 
-function melhorGradeComSobra(w: number, h: number): Resultado | null {
-  let melhor: Resultado | null = null;
-
-  // Grade Normal
-  const colunasN = Math.floor(CHAPA_LARGURA / w);
-  const linhasN = Math.floor(CHAPA_ALTURA / h);
-  if (colunasN > 0 && linhasN > 0) {
-    const qtd = colunasN * linhasN;
-    const blocos = gerarPecasGrade(0, 0, CHAPA_LARGURA, CHAPA_ALTURA, w, h, false);
-    melhor = melhorResultado(
-      melhor,
-      criarResultado(qtd, `Grade normal: ${colunasN} x ${linhasN}`, CHAPA_LARGURA - colunasN * w, CHAPA_ALTURA - linhasN * h, blocos)
-    );
-  }
-
-  // Grade Girada
-  const colunasG = Math.floor(CHAPA_LARGURA / h);
-  const linhasG = Math.floor(CHAPA_ALTURA / w);
-  if (colunasG > 0 && linhasG > 0) {
-    const qtd = colunasG * linhasG;
-    const blocos = gerarPecasGrade(0, 0, CHAPA_LARGURA, CHAPA_ALTURA, h, w, true);
-    melhor = melhorResultado(
-      melhor,
-      criarResultado(qtd, `Grade girada: ${colunasG} x ${linhasG}`, CHAPA_LARGURA - colunasG * h, CHAPA_ALTURA - linhasG * w, blocos)
-    );
-  }
-
-  return melhor;
-}
-
-function melhorPorFaixasVerticais(w: number, h: number): Resultado | null {
-  let melhor: Resultado | null = null;
-
-  const qtdColunaNormal = Math.floor(CHAPA_ALTURA / h);
-  const qtdColunaGirada = Math.floor(CHAPA_ALTURA / w);
-
-  const maxColunasNormais = w > 0 ? Math.floor(CHAPA_LARGURA / w) : 0;
-  const maxColunasGiradas = h > 0 ? Math.floor(CHAPA_LARGURA / h) : 0;
-
-  for (let col_normais = 0; col_normais <= maxColunasNormais; col_normais++) {
-    for (let col_giradas = 0; col_giradas <= maxColunasGiradas; col_giradas++) {
-      const larguraUsada = col_normais * w + col_giradas * h;
-      if (larguraUsada > CHAPA_LARGURA + 1e-9) continue;
-
-      const quantidade = col_normais * qtdColunaNormal + col_giradas * qtdColunaGirada;
-      const sobraLargura = CHAPA_LARGURA - larguraUsada;
-      const sobraAltura = 0;
-
-      const descricao = `Verticais: ${col_normais} col. normais (${qtdColunaNormal}/col) + ${col_giradas} col. giradas (${qtdColunaGirada}/col)`;
-      
-      const blocos: Bloco[] = [];
-      if (col_normais > 0) {
-        blocos.push(...gerarPecasGrade(0, 0, col_normais * w, CHAPA_ALTURA, w, h, false));
-      }
-      if (col_giradas > 0) {
-        blocos.push(...gerarPecasGrade(col_normais * w, 0, col_giradas * h, CHAPA_ALTURA, h, w, true));
-      }
-
-      melhor = melhorResultado(
-        melhor,
-        criarResultado(quantidade, descricao, sobraLargura, sobraAltura, blocos)
-      );
-    }
-  }
-  return melhor;
-}
-
-function melhorPorFaixasHorizontais(w: number, h: number): Resultado | null {
-  let melhor: Resultado | null = null;
-
-  const qtdLinhaNormal = Math.floor(CHAPA_LARGURA / w);
-  const qtdLinhaGirada = Math.floor(CHAPA_LARGURA / h);
-
-  const maxLinhasNormais = h > 0 ? Math.floor(CHAPA_ALTURA / h) : 0;
-  const maxLinhasGiradas = w > 0 ? Math.floor(CHAPA_ALTURA / w) : 0;
-
-  for (let lin_normais = 0; lin_normais <= maxLinhasNormais; lin_normais++) {
-    for (let lin_giradas = 0; lin_giradas <= maxLinhasGiradas; lin_giradas++) {
-      const alturaUsada = lin_normais * h + lin_giradas * w;
-      if (alturaUsada > CHAPA_ALTURA + 1e-9) continue;
-
-      const quantidade = lin_normais * qtdLinhaNormal + lin_giradas * qtdLinhaGirada;
-      const sobraLargura = 0;
-      const sobraAltura = CHAPA_ALTURA - alturaUsada;
-
-      const descricao = `Horizontais: ${lin_normais} lin. normais (${qtdLinhaNormal}/lin) + ${lin_giradas} lin. giradas (${qtdLinhaGirada}/lin)`;
-      
-      const blocos: Bloco[] = [];
-      if (lin_normais > 0) {
-        blocos.push(...gerarPecasGrade(0, 0, CHAPA_LARGURA, lin_normais * h, w, h, false));
-      }
-      if (lin_giradas > 0) {
-        blocos.push(...gerarPecasGrade(0, lin_normais * h, CHAPA_LARGURA, lin_giradas * w, h, w, true));
-      }
-
-      melhor = melhorResultado(
-        melhor,
-        criarResultado(quantidade, descricao, sobraLargura, sobraAltura, blocos)
-      );
-    }
-  }
-  return melhor;
-}
-
-export function calcularMelhorDistribuicao(w: number, h: number): Resultado | null {
+export function calcularMelhorDistribuicao(
+  w: number, 
+  h: number, 
+  chapa_l: number = CHAPA_LARGURA, 
+  chapa_a: number = CHAPA_ALTURA
+): Resultado | null {
   if (w <= 0 || h <= 0) return null;
+
+  function melhorGradeComSobra(w: number, h: number): Resultado | null {
+    let melhor: Resultado | null = null;
+    const colunasN = Math.floor(chapa_l / w);
+    const linhasN = Math.floor(chapa_a / h);
+    if (colunasN > 0 && linhasN > 0) {
+      const qtd = colunasN * linhasN;
+      const blocos = gerarPecasGrade(0, 0, chapa_l, chapa_a, w, h, false);
+      melhor = melhorResultado(
+        melhor,
+        criarResultado(qtd, `Grade normal: ${colunasN} x ${linhasN}`, chapa_l - colunasN * w, chapa_a - linhasN * h, blocos)
+      );
+    }
+    const colunasG = Math.floor(chapa_l / h);
+    const linhasG = Math.floor(chapa_a / w);
+    if (colunasG > 0 && linhasG > 0) {
+      const qtd = colunasG * linhasG;
+      const blocos = gerarPecasGrade(0, 0, chapa_l, chapa_a, h, w, true);
+      melhor = melhorResultado(
+        melhor,
+        criarResultado(qtd, `Grade girada: ${colunasG} x ${linhasG}`, chapa_l - colunasG * h, chapa_a - linhasG * w, blocos)
+      );
+    }
+    return melhor;
+  }
+
+  function melhorPorFaixasVerticais(w: number, h: number): Resultado | null {
+    let melhor: Resultado | null = null;
+    const qtdColunaNormal = Math.floor(chapa_a / h);
+    const qtdColunaGirada = Math.floor(chapa_a / w);
+    const maxColunasNormais = w > 0 ? Math.floor(chapa_l / w) : 0;
+    const maxColunasGiradas = h > 0 ? Math.floor(chapa_l / h) : 0;
+    for (let col_normais = 0; col_normais <= maxColunasNormais; col_normais++) {
+      for (let col_giradas = 0; col_giradas <= maxColunasGiradas; col_giradas++) {
+        const larguraUsada = col_normais * w + col_giradas * h;
+        if (larguraUsada > chapa_l + 1e-9) continue;
+        const quantidade = col_normais * qtdColunaNormal + col_giradas * qtdColunaGirada;
+        const sobraLargura = chapa_l - larguraUsada;
+        const sobraAltura = 0;
+        const descricao = `Verticais: ${col_normais} col. normais (${qtdColunaNormal}/col) + ${col_giradas} col. giradas (${qtdColunaGirada}/col)`;
+        const blocos: Bloco[] = [];
+        if (col_normais > 0) blocos.push(...gerarPecasGrade(0, 0, col_normais * w, chapa_a, w, h, false));
+        if (col_giradas > 0) blocos.push(...gerarPecasGrade(col_normais * w, 0, col_giradas * h, chapa_a, h, w, true));
+        melhor = melhorResultado(melhor, criarResultado(quantidade, descricao, sobraLargura, sobraAltura, blocos));
+      }
+    }
+    return melhor;
+  }
+
+  function melhorPorFaixasHorizontais(w: number, h: number): Resultado | null {
+    let melhor: Resultado | null = null;
+    const qtdLinhaNormal = Math.floor(chapa_l / w);
+    const qtdLinhaGirada = Math.floor(chapa_l / h);
+    const maxLinhasNormais = h > 0 ? Math.floor(chapa_a / h) : 0;
+    const maxLinhasGiradas = w > 0 ? Math.floor(chapa_a / w) : 0;
+    for (let lin_normais = 0; lin_normais <= maxLinhasNormais; lin_normais++) {
+      for (let lin_giradas = 0; lin_giradas <= maxLinhasGiradas; lin_giradas++) {
+        const alturaUsada = lin_normais * h + lin_giradas * w;
+        if (alturaUsada > chapa_a + 1e-9) continue;
+        const quantidade = lin_normais * qtdLinhaNormal + lin_giradas * qtdLinhaGirada;
+        const sobraLargura = 0;
+        const sobraAltura = chapa_a - alturaUsada;
+        const descricao = `Horizontais: ${lin_normais} lin. normais (${qtdLinhaNormal}/lin) + ${lin_giradas} lin. giradas (${qtdLinhaGirada}/lin)`;
+        const blocos: Bloco[] = [];
+        if (lin_normais > 0) blocos.push(...gerarPecasGrade(0, 0, chapa_l, lin_normais * h, w, h, false));
+        if (lin_giradas > 0) blocos.push(...gerarPecasGrade(0, lin_normais * h, chapa_l, lin_giradas * w, h, w, true));
+        melhor = melhorResultado(melhor, criarResultado(quantidade, descricao, sobraLargura, sobraAltura, blocos));
+      }
+    }
+    return melhor;
+  }
   
   let melhor: Resultado | null = null;
   melhor = melhorResultado(melhor, melhorGradeComSobra(w, h));
