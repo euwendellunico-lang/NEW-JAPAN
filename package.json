@@ -11,7 +11,7 @@
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
   },
-  "main": "electron-main.js",
+  "main": "electron-main.cjs",
   "build": {
     "appId": "com.njg.calculo",
     "productName": "CÁLCULO NJG",
@@ -23,7 +23,7 @@
     },
     "files": [
       "dist/**/*",
-      "electron-main.js"
+      "electron-main.cjs"
     ]
   },
   "dependencies": {
