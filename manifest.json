@@ -1,0 +1,21 @@
+{
+  "name": "CÁLCULO NJG",
+  "short_name": "NJG Cálculo",
+  "description": "Calculadora profissional para otimização de corte e distribuição em chapas.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e0273",
+  "icons": [
+    {
+      "src": "https://lh3.googleusercontent.com/d/1omT0tNA02xW5lBSE1sGEzuxHRl3_Amj_",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://lh3.googleusercontent.com/d/1omT0tNA02xW5lBSE1sGEzuxHRl3_Amj_",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
